@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemetría GT7 - Live</title>
+    <style>
+        body {
+            background-color: #0b0e14;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .hud {
+            background: linear-gradient(145deg, #141923, #1a2230);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 2px solid #00e5ff;
+        }
+        .label { font-size: 1.2rem; color: #708090; text-transform: uppercase; letter-spacing: 2px; }
+        .value { font-size: 5rem; font-weight: bold; font-family: monospace; color: #00e5ff; }
+        .rpm-box { margin-top: 20px; }
+        .rpm-value { font-size: 3rem; color: #ff0055; }
+    </style>
+</head>
+<body>
+
+    <div class="hud">
+        <div class="label">Velocidad</div>
+        <div class="value"><span id="speed">0</span> <span style="font-size: 2rem;">km/h</span></div>
+        
+        <div class="rpm-box">
+            <div class="label">Revoluciones (RPM)</div>
+            <div class="rpm-value" id="rpm">0</div>
+        </div>
+        <div class="label" style="margin-top: 15px;">Marcha: <span id="gear" style="color: #fff; font-size: 2rem;">N</span></div>
+    </div>
+
+    <script>
+        // Nos conectamos al servidor que corre en la PC local
+        const ws = new WebSocket('ws://localhost:8080');
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            document.getElementById('speed').innerText = Math.floor(data.speed);
+            document.getElementById('rpm').innerText = Math.floor(data.rpm);
+            
+            let marcha = data.gear;
+            if(marcha === 0) marcha = 'R'; // Reversa
+            if(marcha === 15) marcha = 'N'; // Neutro
+            document.getElementById('gear').innerText = marcha;
+        };
+
+        ws.onerror = () => { console.log("Esperando conexión con el servidor local..."); };
+    </script>
+</body>
+</html>
