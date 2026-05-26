@@ -1,0 +1,9 @@
+{
+  "name": "gt7-telemetry-web",
+  "version": "1.0.0",
+  "description": "Telemetria para Gran Turismo 7",
+  "main": "server.js",
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}
